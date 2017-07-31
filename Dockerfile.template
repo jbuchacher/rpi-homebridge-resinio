@@ -8,11 +8,14 @@ ENV RESIN_WIFI_CONNECT_VERSION 2.0.6
 RUN apt-get update && \
     apt-get upgrade && \
     apt-get install -yq --no-install-recommends \
+    avahi-daemon \
+    avahi-discover \
     dnsmasq \
     hostapd \
     iproute2 \
     iw \
     libavahi-compat-libdnssd-dev \
+    libnss-mdns \
     libdbus-1-dev \
     libexpat-dev \
     rfkill && \
@@ -33,7 +36,9 @@ RUN curl -SL "https://github.com/resin-io/resin-wifi-connect/archive/v$RESIN_WIF
 
 WORKDIR /app
 COPY package.json /app
-RUN npm install --unsafe-perm
+
+RUN JOBS=MAX npm install --production --unsafe-perm && \
+    npm cache clean && rm -rf /tmp/*
 
 COPY . /app
 
